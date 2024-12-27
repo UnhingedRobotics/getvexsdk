@@ -1,19 +1,14 @@
-# Compiler and flags
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic -fPIC
-LDFLAGS = -lcurl -lzip
+CXX := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -I/usr/include/nlohmann
+LDFLAGS := -lcurl -lzip
 
-# Targets
-TARGET = libcheck_sdk.so
-SOURCES = check_sdk.cpp
-HEADERS = check_sdk.hpp
+TARGET := check_sdk
+SOURCES := check_sdk.cpp
 
-# Build the shared library
 all: $(TARGET)
 
-$(TARGET): $(SOURCES) $(HEADERS)
-	$(CXX) $(CXXFLAGS) -shared -o $(TARGET) $(SOURCES) $(LDFLAGS)
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET) $(LDFLAGS)
 
-# Clean up build artifacts
 clean:
 	rm -f $(TARGET)
