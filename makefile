@@ -6,6 +6,7 @@ TARGET := check_sdk
 SOURCES := check_sdk.cpp
 
 all: $(TARGET)
+	./$(TARGET)
 
 $(TARGET): $(SOURCES)
 	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET) $(LDFLAGS)
