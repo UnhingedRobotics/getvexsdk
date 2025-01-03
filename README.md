@@ -82,9 +82,9 @@ The `getvexsdk` utility is implemented in C++ and utilizes standard libraries. T
 
 Upon execution, getvexsdk will:
 
-    1. Download the latest VEX SDK archive.
-    2. Extract the contents to a specified directory.
-    3. Prepare the SDK for integration into your projects.
+1. Download the latest VEX SDK archive.
+2. Extract the contents to a specified directory.
+3. Prepare the SDK for integration into your projects.
 
 For detailed usage instructions and options, refer to the documentation.
 
