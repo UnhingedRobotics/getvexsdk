@@ -1,11 +1,12 @@
 #include <iostream>
-#include <fstream>  // For std::ifstream and std::ofstream
+#include <fstream>
 #include <filesystem>
 #include <string>
 #include <curl/curl.h>
 #include <zip.h>
 #include <cstring> // For strlen
 #include <nlohmann/json.hpp> // For JSON parsing
+#include <cstdlib> // For getenv
 
 namespace fs = std::filesystem;
 
@@ -22,7 +23,7 @@ void downloadFile(const std::string& url, const std::string& outputPath) {
     FILE* file = fopen(outputPath.c_str(), "wb");
     if (!file) {
         curl_easy_cleanup(curl);
-        throw std::runtime_error("Failed to open file for writing");
+        throw std::runtime_error("Failed to open file for writing: " + outputPath);
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -90,12 +91,19 @@ void extractZip(const std::string& zipPath, const fs::path& outputPath) {
 
 int main() {
     try {
+        // Determine temporary directory for Windows
+        const char* tempDir = getenv("TEMP");
+        if (!tempDir) {
+            throw std::runtime_error("Temporary directory not found");
+        }
+        fs::path tempPath = tempDir;
+
         std::string manifestUrl = "https://content.vexrobotics.com/vexos/public/V5/vscode/sdk/cpp/manifest.json";
-        std::string tempZipFile = "/tmp/libv5rt.zip";
+        fs::path manifestFile = tempPath / "manifest.json";
+        fs::path tempZipFile = tempPath / "libv5rt.zip";
 
         // Download manifest.json
-        std::string manifestFile = "/tmp/manifest.json";
-        downloadFile(manifestUrl, manifestFile);
+        downloadFile(manifestUrl, manifestFile.string());
 
         // Parse manifest.json
         std::ifstream inFile(manifestFile);
@@ -113,12 +121,12 @@ int main() {
 
         // Download the SDK zip
         std::cout << "Downloading SDK...\n";
-        downloadFile(sdkUrl, tempZipFile);
+        downloadFile(sdkUrl, tempZipFile.string());
 
         // Extract the SDK
         fs::path sdkOutputDir = "sdk"; // Define your SDK output directory
         std::cout << "Extracting SDK to " << sdkOutputDir << "\n";
-        extractZip(tempZipFile, sdkOutputDir);
+        extractZip(tempZipFile.string(), sdkOutputDir);
 
         std::cout << "SDK successfully downloaded and extracted to " << sdkOutputDir << "\n";
     } catch (const std::exception& ex) {
